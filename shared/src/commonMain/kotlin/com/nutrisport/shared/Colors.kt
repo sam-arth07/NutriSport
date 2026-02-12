@@ -10,6 +10,7 @@ val Yellowish = Color(0xFFEEFF00)
 val Orange = Color(0xFFF24C00)
 val White = Color(0xFFFFFFFF)
 val Black = Color(0xFF000000)
+val Red = Color(0xFFDD0000)
 
 val TextPrimary = Black
 val TextSecondary = Orange
@@ -19,6 +20,8 @@ val TextBrand = Yellowish
 val Surface = White
 val SurfaceLighter = GrayLighter
 val SurfaceDarker = Gray
+val SurfaceBrand = Yellowish
+val SurfaceError = Red
 
 val ButtonPrimary = Yellowish
 val ButtonSecondary = GrayDarker
