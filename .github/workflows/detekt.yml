@@ -15,6 +15,7 @@
 # The workflow should work with no modifications, but you might like to use a
 # later version of the Detekt CLI by modifying the $DETEKT_RELEASE_TAG
 # environment variable.
+
 name: Scan with Detekt
 
 on:
@@ -28,6 +29,11 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
 
 env:
   # Release tag associated with version of Detekt to be installed
