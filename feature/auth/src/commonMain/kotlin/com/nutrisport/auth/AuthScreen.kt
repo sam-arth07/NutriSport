@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,13 +30,19 @@ import com.nutrisport.shared.SurfaceError
 import com.nutrisport.shared.TextPrimary
 import com.nutrisport.shared.TextSecondary
 import com.nutrisport.shared.TextWhite
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import org.koin.compose.viewmodel.koinViewModel
 import rememberMessageBarState
 
 @Composable
-fun AuthScreen() {
+fun AuthScreen(
+    navigateToHome: () -> Unit
+) {
+    val viewModel = koinViewModel<AuthViewModel>()
     val messageBarState = rememberMessageBarState()
     var loadingState by remember{ mutableStateOf(false) }
-
+    val scope = rememberCoroutineScope()
     Scaffold { paddingValues ->
         ContentWithMessageBar(
             modifier = Modifier
@@ -73,13 +80,25 @@ fun AuthScreen() {
                 GoogleButtonUiContainerFirebase(
                     linkAccount = true,
                     onResult = { result ->
+                        println("Result: $result")
                         result.onSuccess { user ->
-                            messageBarState.addSuccess("Authentication successful")
+                            viewModel.createCustomer(
+                                user = user,
+                                onSuccess = {
+                                    scope.launch {
+                                        messageBarState.addSuccess("Authentication successful")
+                                        delay(2000)
+                                        navigateToHome.invoke()
+                                    }
+                                },
+                                onError = {message ->  messageBarState.addError(message) }
+                            )
                             loadingState = false
                         }.onFailure { error ->
-                             if(error.message?.contains("A network error") == true) {
+                            println("User: $error")
+                            if(error.message?.contains("A network error") == true) {
                                  messageBarState.addError("Internet Connection unavailable.")
-                             } else if(error.message?.contains("idtoken is null") == true) {
+                             } else if(error.message?.contains("Idtoken is null") == true) {
                                  messageBarState.addError("Sign in canceled.")
                              } else {
                                  messageBarState.addError(error.message ?: "Unknown Error occurred.")
